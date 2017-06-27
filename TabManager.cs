@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class TabManager : MonoBehaviour {
@@ -10,10 +10,6 @@ public class TabManager : MonoBehaviour {
 	public float proximitySesitivity = 0.1f;
 	public float tabAnimSpeed = 0.1f;
 	public float outsideOffset; //TODO calculate that automaticaly
-
-	public const int trainingTabNum = 1,
-					 balanceTabNum = 2,
-					 difficultyTabNum=0;
 
 	[HideInInspector] public static int currentTab , prevTab;
 	Vector3 outPosLeft, outPosRight;
@@ -45,14 +41,11 @@ public class TabManager : MonoBehaviour {
 
 	void Update () {
 		if ((tabSelectedBG.position-Tabs[currentTab].GetComponent<Transform>().position).magnitude > proximitySesitivity) //if tab havent reacehd destination - move new selected tab to its new location (selected tab) 
-			if (currentTab!=difficultyTabNum) //the difficulty tab is invisible (we only use its content)
 				tabSelectedBG.position = Vector3.Lerp(tabSelectedBG.position, Tabs[currentTab].GetComponent<Transform>().position , tabAnimSpeed);
 		if ((TabsContent[currentTab].transform.position-ContentZeroPos).magnitude > proximitySesitivity) //if content havent reacehd destination - move new current Tab content to center
 			TabsContent[currentTab].transform.position = Vector3.Lerp(TabsContent[currentTab].transform.position, ContentZeroPos , tabAnimSpeed);
 		if (((TabsContent[currentTab].transform.position-outPosLeft).magnitude > proximitySesitivity) && ((TabsContent[currentTab].transform.position-outPosRight).magnitude > proximitySesitivity)) //if content havent reacehd destination - move old current Tab to the side
 			TabsContent[prevTab].transform.position = Vector3.Lerp(TabsContent[prevTab].transform.position, (currentTab > prevTab) ? outPosLeft : outPosRight , tabAnimSpeed);
-
-		//if ((tabSelectedBG.sizeDelta - TabsContent[currentTab].sizeDelta).magnitude > proximitySesitivity )
 			tabSelectedBG.sizeDelta = Vector2.Lerp(tabSelectedBG.sizeDelta, Tabs[currentTab].GetComponents<RectTransform>()[0].sizeDelta,tabAnimSpeed);
 	}
 
@@ -61,18 +54,6 @@ public class TabManager : MonoBehaviour {
 			prevTab = currentTab;
 			currentTab = tabNum;
 			TabsContent[currentTab].transform.position = (prevTab>currentTab) ? outPosLeft : outPosRight; //fix a bug where sometime the ingoing tab comes from the wrong side
-			if (tabNum==trainingTabNum)
-				MainMenuManager.currentGameType = MainMenuManager.gameType.training;
-			else if (tabNum==balanceTabNum)
-				MainMenuManager.currentGameType = MainMenuManager.gameType.balance;
 		}
-	}
-
-	public void chooseDifficulty() {
-		//TODO title
-        Tabs[difficultyTabNum].GetComponentInChildren<ChooseDifficultyBtn>().ResetBtns();
-        if (Tabs[difficultyTabNum].GetComponentInChildren<StartTrainingBtn>() !=null)
-            Tabs[difficultyTabNum].GetComponentInChildren<StartTrainingBtn>().ResetBtns();
-		tabPress(difficultyTabNum);
 	}
 }
